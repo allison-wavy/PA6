@@ -58,7 +58,6 @@ class Net(nn.Module):
                     # found the running_loss stuff in a pytorch example here: https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
                     running_loss += loss.item()
                     print('[%d, %5d] loss: %.3f' % (epochs + 1, e + 1, running_loss))
-                    running_loss = 0.0
 
 
                     #TODO: save the trained network to the myNet.pth file
