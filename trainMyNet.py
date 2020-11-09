@@ -60,7 +60,6 @@ class Net(nn.Module):
                     print('[%d, %5d] loss: %.3f' % (epochs + 1, e + 1, running_loss))
 
 
-                    #TODO: save the trained network to the myNet.pth file
                     # found the two lines below at https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
                     PATH = './myNet.pth'
                     torch.save(net.state_dict(), PATH)
