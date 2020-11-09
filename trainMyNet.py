@@ -10,10 +10,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import sys
 
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
+        # layer one has 2 inputs and 2 outputs
         self.fc1 = nn.Linear(2, 2)
 
     def forward(self, x):
@@ -22,46 +24,59 @@ class Net(nn.Module):
         return x
 
     def train(self, net, labels, fileName):
-        epochs = 1
+        epochs = 10
         for e in range(0, epochs):
+            running_loss = 0.0
             # read a line from the file
             with open(fileName, "r") as file:
                 for line in file:
                     # create a numpy array of floats from the line using space as separator
                     npArr = np.fromstring(line, dtype=float, sep=" ")
-                    # get the class number from the 3rd column to compare against output
+                    # get the class number from the 3rd column to compare against outputline
                     classNum = np.delete(npArr, 0, None)
                     classNum = np.delete(classNum, 0, None)
                     # remove the class number from the data, only use it to compare output
                     npArrNoClass = np.delete(npArr, 2, None)
                 
+                    print(npArrNoClass)
                     # convert that data numpy array into a float tensor using torch
                     data = torch.from_numpy(npArrNoClass).type(torch.FloatTensor)
                     print(e, data)  
-
+    
+                    # measure mean squared loss
                     criterionMSE = nn.MSELoss()
                     optimizer = optim.SGD(net.parameters(), lr=0.1, momentum=0)
                     optimizer.zero_grad()      
 
                     out = net(data)
-                    print(out)
                     loss = criterionMSE(out, labels)
+                    # calculate the backward gradients for back propagation 
                     loss.backward()
-                    print(loss)
+                    # update parameters 
                     optimizer.step()
 
-                    #TODO: save the trained network to the myNet.pth file
+                    # found the running_loss stuff in a pytorch example here: https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
+                    running_loss += loss.item()
+                    print('[%d, %5d] loss: %.3f' % (epochs + 1, e + 1, running_loss))
+                    running_loss = 0.0
 
+
+                    #TODO: save the trained network to the myNet.pth file
+                    # found the two lines below at https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
+                    PATH = './myNet.pth'
+                    torch.save(net.state_dict(), PATH)
 
 def main():
     labels = torch.tensor([1.0, -1.0])
     net = Net()
-
-    fileName = input("Please enter training data file name, including file extension: ")
-
+    fileName = sys.argv[1]
     net.train(net, labels, fileName)
     #net.test(fileName, trainingSet)
-          
 
 if __name__ == "__main__":
     main()
+
+# Questions I still have: 
+    # 1. Are we falling forward anywhere?  Do we need to?
+    # 2. In one of the lectures where he showed us how to define a NN, he created a network input tensor like this: x = torch.tensor([0.3, 0.7, -0.1])
+        # then he declared labels in a separate tensor.  So do we need to declare an x? Or is that we're doing in lines 40-50?
