@@ -14,9 +14,20 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.fc1 = nn.Linear(2, 2)
 
-    def test(self, fileName, trainingSet):
-        # get info from myNet.pth
-        # use that info with the info from fileName to calculate accuracy
+    def forward(self, x):
+        x = self.fc1(x)
+        x = F.relu(self.fc1(x))
+        return x
+
+    def train(self, net, labels, fileName):
+        epochs = 10
+        for e in range(0, epochs):
+            with open(fileName, "r") as file:
+                for line in file:
+                    npArr = np.fromstring(line, dtype=float, sep="")
+
+                    classNum = np.delet(npArr, 0, None)
+
         correct = 0
         total = 0
 
@@ -27,7 +38,7 @@ def main():
     fileName = sys.argv[1]
     net = Net()
     model = torch.load('./myNet.pth')
-    model.eval()
+
 
 if __name__ == '__main__':
     main()

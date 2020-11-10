@@ -44,9 +44,9 @@ class Net(nn.Module):
                     print(e, data)  
     
                     # measure mean squared loss
-                    criterionMSE = nn.MSELoss()
-                    optimizer = optim.SGD(net.parameters(), lr=0.1, momentum=0)
-                    optimizer.zero_grad()      
+                    criterionMSE = nn.MSELoss() # move outside 
+                    optimizer = optim.SGD(net.parameters(), lr=0.1, momentum=0) # move outside
+                    optimizer.zero_grad() 
 
                     out = net(data)
                     loss = criterionMSE(out, labels)
@@ -62,7 +62,7 @@ class Net(nn.Module):
 
                     # found the two lines below at https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
                     PATH = './myNet.pth'
-                    torch.save(net.state_dict(), PATH)
+                    torch.save(net.state_dict(), PATH) # move outside
 
 def main():
     labels = torch.tensor([1.0, -1.0])
