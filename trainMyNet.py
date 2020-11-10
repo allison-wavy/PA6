@@ -38,10 +38,10 @@ class Net(nn.Module):
                     # remove the class number from the data, only use it to compare output
                     npArrNoClass = np.delete(npArr, 2, None)
                 
-                    print(npArrNoClass)
+                    # print(npArrNoClass)
                     # convert that data numpy array into a float tensor using torch
                     data = torch.from_numpy(npArrNoClass).type(torch.FloatTensor)
-                    print(e, data)  
+                    # print(e, data)  
     
                     # measure mean squared loss
                     criterionMSE = nn.MSELoss() # move outside 
@@ -49,6 +49,7 @@ class Net(nn.Module):
                     optimizer.zero_grad() 
 
                     out = net(data)
+                    print(out)
                     loss = criterionMSE(out, labels)
                     # calculate the backward gradients for back propagation 
                     loss.backward()
@@ -57,7 +58,7 @@ class Net(nn.Module):
 
                     # found the running_loss stuff in a pytorch example here: https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
                     running_loss += loss.item()
-                    print('[%d, %5d] loss: %.3f' % (epochs + 1, e + 1, running_loss))
+                    # print('[%d, %5d] loss: %.3f' % (epochs + 1, e + 1, running_loss))
 
 
                     # found the two lines below at https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py

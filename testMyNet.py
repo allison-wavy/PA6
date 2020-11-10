@@ -26,7 +26,15 @@ class Net(nn.Module):
                 for line in file:
                     npArr = np.fromstring(line, dtype=float, sep="")
 
-                    classNum = np.delet(npArr, 0, None)
+                    classNum = np.delete(npArr, 0, None)
+                    classNum = np.delete(classNum, 0, None)
+
+                    npArrNoClass = np.delete(npArr, 2, None)
+
+                    data = torch.from_numpy(npArrNoClass).type(torch.FloatTensor)
+
+                    out = net(data)
+                    print(out)
 
         correct = 0
         total = 0
