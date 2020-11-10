@@ -23,8 +23,20 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         return x
 
+    def normalize(self, fileName):
+        data = []
+        with open(fileName, "r") as file:
+            for line in file:
+                npArr = np.fromstring(line, dtype=float, sep=" ")
+                data.append(npArr[0])
+                data.append(npArr[1])
+        print(data)
+        normalized = (data - np.min(data)) / (np.max(data) - np.min(data))
+        print(normalized)
+        return normalized 
+
     def train(self, net, labels, fileName):
-        epochs = 10
+        epochs = 1
         for e in range(0, epochs):
             running_loss = 0.0
             # read a line from the file
@@ -32,16 +44,17 @@ class Net(nn.Module):
                 for line in file:
                     # create a numpy array of floats from the line using space as separator
                     npArr = np.fromstring(line, dtype=float, sep=" ")
+                    # print(npArr)
                     # get the class number from the 3rd column to compare against outputline
                     classNum = np.delete(npArr, 0, None)
                     classNum = np.delete(classNum, 0, None)
                     # remove the class number from the data, only use it to compare output
                     npArrNoClass = np.delete(npArr, 2, None)
                 
-                    print(npArrNoClass)
+                    # print(npArrNoClass)
                     # convert that data numpy array into a float tensor using torch
                     data = torch.from_numpy(npArrNoClass).type(torch.FloatTensor)
-                    print(e, data)  
+                    # print(e, data)  
     
                     # measure mean squared loss
                     criterionMSE = nn.MSELoss()
@@ -57,7 +70,7 @@ class Net(nn.Module):
 
                     # found the running_loss stuff in a pytorch example here: https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
                     running_loss += loss.item()
-                    print('[%d, %5d] loss: %.3f' % (epochs + 1, e + 1, running_loss))
+                    # print('[%d, %5d] loss: %.3f' % (epochs + 1, e + 1, running_loss))
 
 
                     # found the two lines below at https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
@@ -69,6 +82,7 @@ def main():
     net = Net()
     fileName = sys.argv[1]
     net.train(net, labels, fileName)
+    normalized_data = net.normalize(fileName)
     #net.test(fileName, trainingSet)
 
 if __name__ == "__main__":
