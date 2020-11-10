@@ -82,8 +82,8 @@ class Net(nn.Module):
 
 
                     # found the two lines below at https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
-                    PATH = './myNet.pth'
-                    torch.save(net.state_dict(), PATH)
+        PATH = './myNet.pth'
+        torch.save(net.state_dict(), PATH)
 
 
 def main():
@@ -96,8 +96,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# Questions I still have: 
-    # 1. Are we calling forward anywhere?  Do we need to?
-    # 2. In one of the lectures where he showed us how to define a NN, he created a network input tensor like this: x = torch.tensor([0.3, 0.7, -0.1])
-        # then he declared labels in a separate tensor.  So do we need to declare an x? Or is that we're doing in lines 40-50?
