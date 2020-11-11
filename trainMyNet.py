@@ -21,28 +21,66 @@ class Net(nn.Module):
         x = self.fc1(x)
         return x        
 
+    def normalize(self, dataArray):
+        #sum all the columns
+        colSums = np.sum(dataArray, 0)
+        #get the mean from the sum
+        means = colSums / len(dataArray)
+        #get the standard deviation of the columns
+        stds = np.std(dataArray, 0)
+        #create an empty numpy array with same shape as data array
+        data = []
+        #iterate through each row in the data array
+        for item in dataArray:
+            #for element in that row
+            for index in range(2):
+                #normalize that element
+                x = (item[index] - means[0]) / stds[0]
+                y = (item[index] - means[1]) / stds[1]
+            #then create an array out of it
+            arr = [x, y]
+            #add that array to data numpy array
+            data.append(arr)
+        
+        data = np.array(data)
+
+        return data
+
     def train(self, net, fileName):
         #set up number of epochs, loss function, and optimizer
-        epochs = 20
+        epochs = 25
         criterionMSE = nn.MSELoss()
         optimizer = optim.SGD(net.parameters(), lr=0.1, momentum=0) 
 
         #parse a numpy array from given data text file
         with open(fileName, "r") as file:
             npArr = np.genfromtxt(file, dtype=float, delimiter=' ')
+        #print(npArr)
 
         #turn that numpy array into a data array excluding the class label in col 3
         npArrNoClass = np.delete(npArr, 2, 1)
+        #print(npArrNoClass)
+
         #also turn that numpy array into a class label array excluding the data in col 1 and 2
         classLabelArray = np.delete(npArr, 0, 1)
         classLabelArray = np.delete(classLabelArray, 0, 1)
+        #print(classLabelArray)
+
         #figure out how many rows and columns are in the data array for looping purposes
         numRows, numCols = npArrNoClass.shape
+        #print(numRows)
+        
+        #normalize the data
+        normalizedData = net.normalize(npArrNoClass)
+        #print(normalizedData)
+
         #convert those created arrays into tensors with torch
         classLabels = torch.from_numpy(classLabelArray).type(torch.FloatTensor)
-        data = torch.from_numpy(npArrNoClass).type(torch.FloatTensor)
-        #normalize the data tensor
-        F.normalize(data, dim=0) #TODO: substitute this for the mean/std version
+        #print(classLabels)
+
+        data = torch.from_numpy(normalizedData).type(torch.FloatTensor)
+        #print(data)
+
         #for keeping track of the total loss
         #running_loss = 0.0 #TODO: Do we need running loss?        
 
@@ -59,7 +97,7 @@ class Net(nn.Module):
                 loss = criterionMSE(out, label)
                 # calculate the backward gradients for back propagation 
                 loss.backward()
-                print(loss) 
+                #print('[Epoch %d] Loss: %.3f' % (e + 1, loss)) 
                 # found the running_loss stuff in a pytorch example here: https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
                 #running_loss += loss.item() #TODO: Do we need running loss?
                 #print('[Epoch %d] loss: %.3f' % (e + 1, running_loss))
