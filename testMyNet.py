@@ -15,16 +15,15 @@ class Net(nn.Module):
         self.fc1 = nn.Linear(2, 2)
 
     def forward(self, x):
-        x = F.relu(self.fc1(x))
         x = self.fc1(x)
         return x
 
     def test(self, net, labels, fileName):
-        epochs = 20
         correct = 0
         total = 0
 
         net.load_state_dict(torch.load('./myNet.pth'))
+        #model = torch.load('./myNet.pth')
 
         with open(fileName, "r") as file:
             npArr = np.genfromtxt(file, dtype=float, delimiter=' ')
@@ -33,7 +32,7 @@ class Net(nn.Module):
             F.normalize(data, dim=0)
             #print(data)
 
-        for e in range(0, epochs):
+        for row in :
             total += 3
             out = net(data)
             print(out) #there should be epochs * 3 number of rows total among all tensors outputed
