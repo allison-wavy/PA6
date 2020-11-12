@@ -7,7 +7,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import sys
-
+import matplotlib  
+matplotlib.use('TkAgg')   
+import matplotlib.pyplot as plt  
 
 class Net(nn.Module):
     def __init__(self):
@@ -19,12 +21,17 @@ class Net(nn.Module):
         return x
 
     def normalize(self, dataArray):
+       
         #sum all the columns
+        plt.scatter(dataArray[:,0],dataArray[:,1], c="green", marker='o')
         colSums = np.sum(dataArray, 0)
-        #get the mean from the sum
-        means = colSums / len(dataArray)
-        #get the standard deviation of the columns
-        stds = np.std(dataArray, 0)
+
+        # get the mean and std from training
+        with open("./mean_std.txt", "r") as file:
+            arr = np.genfromtxt(file, dtype=float, delimiter=' ')
+            means = [arr[0], arr[1]]
+            stds = [arr[2], arr[3]]
+
         #create an empty numpy array with same shape as data array
         data = []
         #iterate through each row in the data array
@@ -40,6 +47,7 @@ class Net(nn.Module):
             data.append(arr)
         
         data = np.array(data)
+        # print(data)
 
         return data
 
@@ -72,7 +80,6 @@ class Net(nn.Module):
         normalizedData = net.normalize(npArrNoClass)
 
         data = torch.from_numpy(normalizedData).type(torch.FloatTensor)
-        #print(data)
 
         #create an empty list for storing class predictions
         classPredictions = []
@@ -81,6 +88,7 @@ class Net(nn.Module):
         for row in range(numRows):
             #get the output from the network
             out = net(data[row])
+
             #check if it's negative or positive
             if (out < 0):
                 #if negative, give class -1.0
@@ -104,6 +112,9 @@ class Net(nn.Module):
         print('Total: %d, Correct: %d' % (total, correct))
             
         print('Testing done. Accuracy: %d %%' % (100 * correct / total))
+
+        plt.show()
+
 
 
 def main():

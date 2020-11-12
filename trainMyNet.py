@@ -44,6 +44,10 @@ class Net(nn.Module):
         
         data = np.array(data)
 
+        with open("./mean_std.txt", "w") as file:
+            np.savetxt(file, means)
+            np.savetxt(file, stds)
+
         return data
 
     def train(self, net, fileName):
@@ -81,9 +85,6 @@ class Net(nn.Module):
         data = torch.from_numpy(normalizedData).type(torch.FloatTensor)
         #print(data)
 
-        #for keeping track of the total loss
-        #running_loss = 0.0 #TODO: Do we need running loss?        
-
         #loop through the whole training process 'epochs' times
         for e in range(epochs):
             #go through each row of the data tensor
@@ -98,9 +99,6 @@ class Net(nn.Module):
                 # calculate the backward gradients for back propagation 
                 loss.backward()
                 #print('[Epoch %d] Loss: %.3f' % (e + 1, loss)) 
-                # found the running_loss stuff in a pytorch example here: https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
-                #running_loss += loss.item() #TODO: Do we need running loss?
-                #print('[Epoch %d] loss: %.3f' % (e + 1, running_loss))
 
                 # update parameters 
                 optimizer.step()
